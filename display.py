@@ -15,9 +15,17 @@ def display(array: NDArray[np.float64]):
 
     for i in range(array.shape[0]):
         for j in range(array.shape[1]):
-            color = (int(array[i][j] * 256), int(array[i]
-                     [j] * 256), int(array[i][j] * 256))
+            # color = (int(array[i][j] * 256), int(array[i]
+            #          [j] * 256), int(array[i][j] * 256))
+
+            # color = (round(array[i][j]) * 256, round(array[i]
+            #          [j]) * 256, round(array[i][j]) * 256,)
+            # print(color)
+
+            color = (int(array[i][j]), int(array[i][j]), int(array[i][j]))
             draw.rectangle(
                 ((i * size, j * size), (i * size + size, j * size + size)), fill=color, width=0)
+            draw.text((i * size, j * size),
+                      str(int(array[i][j])), fill=(255, 0, 0))
 
     img.show()

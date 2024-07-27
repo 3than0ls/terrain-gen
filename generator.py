@@ -6,8 +6,8 @@ import random
 from numpy.typing import NDArray
 from datatypes import Point, Square, Diamond
 
-SCALE_CONST = 1
-TERRAIN_SMOOTHNESS = 0.5
+SCALE_CONST = 256
+TERRAIN_SMOOTHNESS = 1
 
 
 def _get_point_value(source_arr: NDArray[np.float64], point: Point) -> float:
@@ -26,25 +26,24 @@ def _find_average(source_arr: NDArray[np.float64], shape: Square | Diamond) -> f
         # computed during diamond step
         total = sum((_get_point_value(source_arr, point) for point in (
             shape.top_left, shape.top_right, shape.bottom_left, shape.bottom_right)))
+        avg = total / 4
     elif isinstance(shape, Diamond):
         # computed during square step
-        # incorrect implementation, doesnt use average of surrounding points instead just uses 0
         total = 0
-        points = [shape.top, shape.left, shape.right, shape.bottom]
-        for point in points:
+        existing_points = 4
+        for point in [shape.top, shape.left, shape.right, shape.bottom]:
             if _get_point_value(source_arr, point) == -1:
-                total += sum([_get_point_value(source_arr, p)
-                              for p in points if p != point]) / 3
+                existing_points -= 1
             else:
                 total += _get_point_value(source_arr, point)
+        avg = total / existing_points
 
-    avg = total / 4
     avg = round(avg, 2)
     return avg
 
 
 def random_value(iteration: int) -> float:
-    return random.random() * SCALE_CONST * math.pow(TERRAIN_SMOOTHNESS, iteration)
+    return (random.random() - 0.5) * SCALE_CONST * (math.pow(2, -TERRAIN_SMOOTHNESS) ** iteration)
 
 
 def generate_diamonds_from_window(window: Square) -> tuple[Diamond, Diamond, Diamond, Diamond]:
@@ -61,13 +60,6 @@ def generate_diamonds_from_window(window: Square) -> tuple[Diamond, Diamond, Dia
     )
 
 
-def _diamond_step(source_arr: NDArray[np.float64], window: Square, iteration: int) -> tuple[Diamond, Diamond, Diamond, Diamond]:
-    midpoint = window.midpoint
-    value = _find_average(source_arr, window)
-    source_arr[midpoint.y][midpoint.x] = value + random_value(iteration)
-    return generate_diamonds_from_window(window)
-
-
 def generate_squares_from_window(window: Square) -> tuple[Square, Square, Square, Square]:
     new_size = (window.size) // 2
     return (
@@ -79,6 +71,13 @@ def generate_squares_from_window(window: Square) -> tuple[Square, Square, Square
         Square(Point(window.top_left.x + window.size //
                2, window.top_left.y + new_size), new_size),
     )
+
+
+def _diamond_step(source_arr: NDArray[np.float64], window: Square, iteration: int) -> tuple[Diamond, Diamond, Diamond, Diamond]:
+    midpoint = window.midpoint
+    value = _find_average(source_arr, window)
+    source_arr[midpoint.y][midpoint.x] = value + random_value(iteration)
+    return generate_diamonds_from_window(window)
 
 
 def _square_step(source_arr:  NDArray[np.float64], window: Square, diamonds: tuple[Diamond, Diamond, Diamond, Diamond], iteration: int) -> tuple[Square, Square, Square, Square]:
