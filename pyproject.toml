@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "terrain-gen"
+version = "0.1.0"
+description = "Terrain Generation"
+authors = ["Ethan Chennault <37466516+3than0ls@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+numpy = "^2.0.0"
+pillow = "^10.4.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.5.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
