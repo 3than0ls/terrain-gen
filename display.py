@@ -6,7 +6,7 @@ import math
 
 
 def display(array: NDArray[np.float64]):
-    size = 1000 // (array.shape[0])
+    size = max(1600 // (array.shape[0]), 1)
 
     img = Image.new(mode="RGB", size=(
         array.shape[0] * size, array.shape[1] * size), color=(255, 0, 0))
@@ -15,17 +15,16 @@ def display(array: NDArray[np.float64]):
 
     for i in range(array.shape[0]):
         for j in range(array.shape[1]):
-            # color = (int(array[i][j] * 256), int(array[i]
-            #          [j] * 256), int(array[i][j] * 256))
-
-            # color = (round(array[i][j]) * 256, round(array[i]
-            #          [j]) * 256, round(array[i][j]) * 256,)
-            # print(color)
-
-            color = (int(array[i][j]), int(array[i][j]), int(array[i][j]))
+            value = int(array[i][j])
+            if value < 0:
+                color = (116, 204, 244)
+            else:
+                value += 100
+                color = (value, value, value)
             draw.rectangle(
                 ((i * size, j * size), (i * size + size, j * size + size)), fill=color, width=0)
-            draw.text((i * size, j * size),
-                      str(int(array[i][j])), fill=(255, 0, 0))
+            # draw.text((i * size, j * size),
+            #           str(value), fill=(255, 0, 0))
 
+    # img.save(r'C:\Users\ethan\code\terrain-gen\img.png')
     img.show()

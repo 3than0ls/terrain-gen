@@ -6,25 +6,24 @@ from display import display
 # https://en.wikipedia.org/wiki/Diamond-square_algorithm
 
 
-def seed_value(rand: bool = False):
+def seed_value(rand: bool = True):
     if rand:
-        return random.random()
+        return random.uniform(-256, 256)
     else:
-        return 256/2
+        return 0
 
 
 def main():
-    SFACTOR = 5
+    SFACTOR = 9
     size = 2 ** SFACTOR + 1
     nparray = np.zeros((size, size))
-    nparray[0][0] = seed_value()
-    nparray[0][size-1] = seed_value()
-    nparray[size-1][0] = seed_value()
-    nparray[size-1][size-1] = seed_value()
-    # arr = np.zeros((31, 31), dtype=np.float64)
-    # arr = np.ndarray()
+
+    # nparray[0][0] = seed_value()
+    # nparray[size-1][0] = seed_value()
+    # nparray[0][size-1] = seed_value()
+    # nparray[size-1][size-1] = seed_value()
+
     diamond_square(nparray)
-    print(nparray)
 
     display(nparray)
 
