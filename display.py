@@ -2,11 +2,10 @@
 from PIL import Image, ImageDraw
 import numpy as np
 from numpy.typing import NDArray
-import math
 
 
 def display(array: NDArray[np.float64]):
-    size = max(1600 // (array.shape[0]), 1)
+    size = max(1600 // (array.shape[0]-1), 1)
 
     img = Image.new(mode="RGB", size=(
         array.shape[0] * size, array.shape[1] * size), color=(255, 0, 0))

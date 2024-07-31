@@ -4,13 +4,13 @@ import numpy as np
 import math
 import random
 from numpy.typing import NDArray
-from datatypes import Point
+from dataclasses import dataclass
 
 ArrayType = NDArray[np.float64]
 
 
 TERRAIN_SMOOTHNESS = 0.55
-SCALE_CONST = 100
+AMPLITUDE = 100
 
 
 # BIND = True
@@ -21,11 +21,10 @@ SCALE_CONST = 100
 #     return min(max(value, minimum), maximum) if BIND else value
 
 
-def _random_value(iteration: int) -> float:
-    scale = SCALE_CONST
-    shrink_factor = math.pow(math.pow(2, -TERRAIN_SMOOTHNESS), iteration)
-    # shrink_factor = 1
-    return random.uniform(-scale * shrink_factor, scale * shrink_factor)
+@dataclass
+class Point:
+    x: int
+    y: int
 
 
 def _get_value(source_arr: NDArray[np.float64], point: Point) -> float | None:
@@ -37,7 +36,7 @@ def _get_value(source_arr: NDArray[np.float64], point: Point) -> float | None:
 
 def _find_avg(source_arr: NDArray[np.float64], midpoint: Point, width: int, step: typing.Literal['diamond', 'square']) -> float:  # type: ignore
     """Finds the average value of the points around point [x, y]. If the point is on the edge, then only take the average of the 3 existing points."""
-    size = source_arr.shape[0]
+    source_arr.shape[0]
     total = 0
     if step == 'diamond':
         # the points surrounding a point made in the diamond steps ALWAYS exist and are in the array
@@ -65,7 +64,7 @@ def _find_avg(source_arr: NDArray[np.float64], midpoint: Point, width: int, step
         return total / count
 
 
-def diamond_step(source_arr: ArrayType, width: int, iteration: int) -> None:
+def diamond_step(source_arr: ArrayType, width: int, amplitude: float) -> None:
     """
     Rather than following the visualization steps found on the Wikipedia (https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Diamond_Square.svg/1920px-Diamond_Square.svg.png)
     Just calculate the start, stop, and step points for the diamond points.
@@ -84,11 +83,11 @@ def diamond_step(source_arr: ArrayType, width: int, iteration: int) -> None:
         for x in range(*params):
             avg = _find_avg(source_arr, Point(x, y),
                             half_width, step="diamond")
-            randomness = _random_value(iteration)
+            randomness = random.uniform(-amplitude, amplitude)
             source_arr[y, x] = avg + randomness
 
 
-def square_step(source_arr: ArrayType, width: int, iteration: int) -> None:
+def square_step(source_arr: ArrayType, width: int, amplitude: float) -> None:
     """
     Rather than following the visualization steps found on the Wikipedia (https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Diamond_Square.svg/1920px-Diamond_Square.svg.png)
     Just calculate the start, stop, and step points for the square points.
@@ -113,30 +112,31 @@ def square_step(source_arr: ArrayType, width: int, iteration: int) -> None:
         for x in range(half_width * int(alternate), size, width):
             avg = _find_avg(source_arr, Point(x, y),
                             half_width, step="square")
-            randomness = _random_value(iteration)
+            randomness = random.uniform(-amplitude, amplitude)
             source_arr[y, x] = avg + randomness
         alternate = not alternate
 
 
-def diamond_square(source_arr: ArrayType, window=None) -> ArrayType:
+def diamond_square(source_arr: ArrayType, terrain_smoothness=TERRAIN_SMOOTHNESS, amplitude=AMPLITUDE) -> ArrayType:
+    """
+    Given a seeded `source_arr` of `ArrayType`, populate it with values using the diamond square algorithm, described at https://en.wikipedia.org/wiki/Diamond-square_algorithm
+
+    """
+
     assert source_arr.shape[0] == source_arr.shape[1]
     assert math.log2(source_arr.shape[0] - 1).is_integer()
     assert math.log2(source_arr.shape[1] - 1).is_integer()
 
     shape = source_arr.shape
-
     width = shape[0] - 1
-    iteration = 0
 
     while width > 1:
-        midpoint = source_arr.shape
-
         # perform diamond step
-        diamond_step(source_arr, width, iteration)
+        diamond_step(source_arr, width, amplitude)
         # perform square step
-        square_step(source_arr, width, iteration)
+        square_step(source_arr, width, amplitude)
 
         width //= 2
-        iteration += 1
+        amplitude *= math.pow(2, -terrain_smoothness)
 
     return source_arr
