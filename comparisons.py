@@ -3,6 +3,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from generator import diamond_square
+from normalize import normalize
 
 
 def draw_single(draw: ImageDraw.ImageDraw, array: NDArray[np.float64], display_size: int, offset: tuple[int, int]):
@@ -29,7 +30,7 @@ def comparisons(map_size_factor=7, ts_range=[x / 10.0 for x in range(0, 11)], am
     """
     Compares maps for ranges of terrain smoothness (`ts_range`) and amplitude (`amp_range`) in a single PNG.
     """
-    UNIT_SIZE = 5  # size of an individual pixel/value in each array
+    UNIT_SIZE = 8  # size of an individual pixel/value in each array
 
     map_size = 2 ** map_size_factor + 1
 
@@ -46,6 +47,7 @@ def comparisons(map_size_factor=7, ts_range=[x / 10.0 for x in range(0, 11)], am
         for amp_i, amplitude in enumerate(amp_range):
             seed = np.zeros((map_size, map_size))
             diamond_square(seed, terrain_smoothness, amplitude)
+            normalize(seed, 0, 256)
 
             offset = (border_size + ts_i * (display_size + border_size),
                       border_size + amp_i * (display_size + border_size))
@@ -61,7 +63,7 @@ def comparisons(map_size_factor=7, ts_range=[x / 10.0 for x in range(0, 11)], am
                 font=font
             )
 
-    img.show()
+    img.show("DS Terrain Smoothness and Amplitude Comparisons (Normalized 0-256)")
 
 
 if __name__ == '__main__':

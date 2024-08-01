@@ -15,11 +15,16 @@ def display(array: NDArray[np.float64]):
     for i in range(array.shape[0]):
         for j in range(array.shape[1]):
             value = int(array[i][j])
-            if value < 0:
+            if value < 100:
                 color = (116, 204, 244)
+            elif value < 120:
+                color = (194, 178, 128)
+            elif value < 180:
+                color = (19, 109, 21)
+            elif value < 240:
+                color = (120, 120, 120)
             else:
-                value += 100
-                color = (value, value, value)
+                color = (235, 235, 235)
             draw.rectangle(
                 ((i * size, j * size), (i * size + size, j * size + size)), fill=color, width=0)
             # draw.text((i * size, j * size),
