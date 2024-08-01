@@ -6,8 +6,7 @@ from display import display, load_gradient
 # https://en.wikipedia.org/wiki/Diamond-square_algorithm
 
 
-# TODO: update README
-
+# TODO: fix issue: what if we want the seed to be the lowest possible value? in generator implementation, only allow it to go up.
 # TODO: post generation changes
 #       - for every pixel; if the 4 directly adjacent pixels are of a certain value, set to those values
 # TODO: 3 dimensional implementation
@@ -17,10 +16,10 @@ def main():
     arr_size = 2 ** size + 1
 
     seed = np.zeros((arr_size, arr_size), dtype=DataType)
-    out = generate(seed)
+    out = generate(seed, 0.8)
     normalized = normalize(out, 0, 256)
 
-    gradient = load_gradient(Path("./display/gradient.json"))
+    gradient = load_gradient(Path("./display/default.json"))
     display(normalized, gradient)
 
 

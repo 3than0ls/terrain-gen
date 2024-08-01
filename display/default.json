@@ -1,8 +1,8 @@
 {
-    "title": "Default",
+    "title": "Default Gradient",
     "desc": "For arrays normalized to 0-256",
     "gradient": {
-        "0": "#0006ad",
+        "0": "#00288c",
         "15": "#0031ad",
         "55": "#0b46e6",
         "65": "#057cf2",

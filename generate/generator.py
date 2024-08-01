@@ -5,7 +5,7 @@ import math
 import random
 from generate.typing import DataType, Point, ArrayType
 
-SMOOTHNESS = 0.55
+SMOOTHNESS = 0.7
 AMPLITUDE = 100
 
 
@@ -106,9 +106,7 @@ def _diamond_square(array: ArrayType, smoothness=SMOOTHNESS, amplitude=AMPLITUDE
     width = shape[0] - 1
 
     while width > 1:
-        # perform diamond step
         _diamonds_step(array, width, amplitude)
-        # perform square step
         _square_step(array, width, amplitude)
 
         width //= 2
@@ -123,6 +121,11 @@ def generate(source_arr: ArrayType, smoothness=SMOOTHNESS, amplitude=AMPLITUDE) 
     described at https://en.wikipedia.org/wiki/Diamond-square_algorithm.
 
     Ensure that source array is of correct type (`DataType` and `ArrayType`) and is a square shape with a width of `2^n+1` for integer `n` > 0.
+
+    **Smoothness**, ranging from 0 to 1, determines the smoothness of the output. The lower the smoothness, the more staticky the values may appear. Higher smoothness reduces this.
+
+    **Amplitude**, a positive integer, also helps determines the difference in values, essentially influencing the difference between the lowest and highest point. 
+    However, if normalizing, amplitude is essentially irrelevant.
 
     Returns a new array, of type `ArrayType`, after which the diamond square algorithm has taken place (using the seeded values).
     """

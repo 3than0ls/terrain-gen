@@ -24,11 +24,11 @@ def draw_single(draw: ImageDraw.ImageDraw, array: ArrayType, display_size: int, 
             )
 
 
-def comparisons(map_size_factor=7, s_range=[x / 10.0 for x in range(0, 11)], amp_range=range(50, 600, 50)):
+def comparisons(map_size_factor=7, s_range=[x / 10.0 for x in range(0, 13)], amp_range=range(50, 650, 100)):
     """
     Compares maps for ranges of terrain smoothness (`s_range`) and amplitude (`amp_range`) in a single PNG.
     """
-    UNIT_SIZE = 6  # size of an individual pixel/value in each array
+    UNIT_SIZE = 4  # size of an individual pixel/value in each array
 
     map_size = 2 ** map_size_factor + 1
 
@@ -62,6 +62,7 @@ def comparisons(map_size_factor=7, s_range=[x / 10.0 for x in range(0, 11)], amp
             )
 
     img.show("DS Smoothness and Amplitude Comparisons (Normalized 0-256)")
+    # img.save("./comparisons.png")
 
 
 if __name__ == '__main__':

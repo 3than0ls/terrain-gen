@@ -16,7 +16,6 @@ def display(array: ArrayType, gradient: Gradient):
         for j in range(array.shape[1]):
             value = int(array[i][j])
 
-            # color = gradient[next(iter(gradient))]
             color = get_color(gradient, value)
 
             draw.rectangle(
