@@ -16,3 +16,8 @@ However, if normalizing, amplitude is essentially irrelevant.
 See comparisons of inputs below.
 
 ![input comparisons](https://github.com/3than0ls/terrain-gen/blob/master/assets/comparisons.png)
+
+## Author
+
+Ethan Chennault
+ethanolchennault@gmail.com
