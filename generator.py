@@ -10,17 +10,16 @@ TERRAIN_SMOOTHNESS = 0.55
 AMPLITUDE = 100
 
 
-def _get_value(source_arr: ArrayType, point: Point) -> float | None:
+def _get_value(array: ArrayType, point: Point) -> float | None:
     """Gets the array value at a point [x, y]. If the point is out of bounds of the array, return None."""
-    if point.x < 0 or point.x > source_arr.shape[0] - 1 or point.y < 0 or point.y > source_arr.shape[0] - 1:
+    if point.x < 0 or point.x > array.shape[0] - 1 or point.y < 0 or point.y > array.shape[0] - 1:
         return None
-    return source_arr[point.y, point.x]
+    return array[point.y, point.x]
 
 
 # type: ignore
-def _find_avg(source_arr: ArrayType, midpoint: Point, width: int, step: typing.Literal['diamond', 'square']) -> float:
+def _find_avg(array: ArrayType, midpoint: Point, width: int, step: typing.Literal['diamond', 'square']) -> float:
     """Finds the average value of the points around point [x, y]. If the point is on the edge, then only take the average of the 3 existing points."""
-    source_arr.shape[0]
     total = 0
     if step == 'diamond':
         # the points surrounding a point made in the diamond steps ALWAYS exist and are in the array
@@ -30,7 +29,7 @@ def _find_avg(source_arr: ArrayType, midpoint: Point, width: int, step: typing.L
             Point(midpoint.x-width, midpoint.y-width),
             Point(midpoint.x+width, midpoint.y-width)
         ):
-            total += _get_value(source_arr, point)  # type: ignore
+            total += _get_value(array, point)  # type: ignore
         return total / 4
     elif step == 'square':
         count = 4
@@ -40,7 +39,7 @@ def _find_avg(source_arr: ArrayType, midpoint: Point, width: int, step: typing.L
             Point(midpoint.x-width, midpoint.y),
             Point(midpoint.x+width, midpoint.y)
         ):
-            value = _get_value(source_arr, point)
+            value = _get_value(array, point)
             if value is None:
                 count -= 1
             else:
@@ -48,12 +47,12 @@ def _find_avg(source_arr: ArrayType, midpoint: Point, width: int, step: typing.L
         return total / count
 
 
-def diamond_step(source_arr: ArrayType, width: int, amplitude: float) -> None:
+def diamond_step(array: ArrayType, width: int, amplitude: float) -> None:
     """
     Rather than following the visualization steps found on the Wikipedia (https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Diamond_Square.svg/1920px-Diamond_Square.svg.png)
     Just calculate the start, stop, and step points for the diamond points.
     """
-    size = source_arr.shape[0]
+    size = array.shape[0]
     half_width = width // 2
     params = (half_width, size, width)
 
@@ -65,18 +64,18 @@ def diamond_step(source_arr: ArrayType, width: int, amplitude: float) -> None:
     """
     for y in range(*params):
         for x in range(*params):
-            avg = _find_avg(source_arr, Point(x, y),
+            avg = _find_avg(array, Point(x, y),
                             half_width, step="diamond")
             randomness = random.uniform(-amplitude, amplitude)
-            source_arr[y, x] = avg + randomness
+            array[y, x] = avg + randomness
 
 
-def square_step(source_arr: ArrayType, width: int, amplitude: float) -> None:
+def square_step(array: ArrayType, width: int, amplitude: float) -> None:
     """
     Rather than following the visualization steps found on the Wikipedia (https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Diamond_Square.svg/1920px-Diamond_Square.svg.png)
     Just calculate the start, stop, and step points for the square points.
     """
-    size = source_arr.shape[0]
+    size = array.shape[0]
     half_width = width // 2
     alternate = True
 
@@ -94,33 +93,37 @@ def square_step(source_arr: ArrayType, width: int, amplitude: float) -> None:
         step    half_width                      square point generation steps full widths across
         """
         for x in range(half_width * int(alternate), size, width):
-            avg = _find_avg(source_arr, Point(x, y),
+            avg = _find_avg(array, Point(x, y),
                             half_width, step="square")
             randomness = random.uniform(-amplitude, amplitude)
-            source_arr[y, x] = avg + randomness
+            array[y, x] = avg + randomness
         alternate = not alternate
 
 
 def diamond_square(source_arr: ArrayType, terrain_smoothness=TERRAIN_SMOOTHNESS, amplitude=AMPLITUDE) -> ArrayType:
     """
-    Given a seeded `source_arr` of `ArrayType`, populate it with values using the diamond square algorithm, described at https://en.wikipedia.org/wiki/Diamond-square_algorithm
+    Given a seeded `source_arr` of `ArrayType`, populate it with values using the diamond square algorithm, 
+    described at https://en.wikipedia.org/wiki/Diamond-square_algorithm.
 
+    Returns a new array, after which the diamond square algorithm has taken place (using the seeded values).
     """
     assert source_arr.shape[0] == source_arr.shape[1]
     assert math.log2(source_arr.shape[0] - 1).is_integer()
     assert math.log2(source_arr.shape[1] - 1).is_integer()
     assert source_arr.dtype == DataType
 
+    array = np.copy(source_arr)
+
     shape = source_arr.shape
     width = shape[0] - 1
 
     while width > 1:
         # perform diamond step
-        diamond_step(source_arr, width, amplitude)
+        diamond_step(array, width, amplitude)
         # perform square step
-        square_step(source_arr, width, amplitude)
+        square_step(array, width, amplitude)
 
         width //= 2
         amplitude *= math.pow(2, -terrain_smoothness)
 
-    return source_arr
+    return array

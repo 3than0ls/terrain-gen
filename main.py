@@ -18,10 +18,9 @@ def main():
     arr_size = 2 ** size + 1
     seed = np.zeros((arr_size, arr_size))
 
-    diamond_square(seed)
-    normalize(seed, 0, 256)
-
-    display(seed)
+    out = diamond_square(seed, 0, 550)
+    normalized = normalize(out, 0, 256)
+    display(normalized)
 
 
 if __name__ == "__main__":
