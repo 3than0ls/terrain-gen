@@ -1,10 +1,9 @@
-# use pillow or something idk idgaf
 from PIL import Image, ImageDraw
-import numpy as np
-from numpy.typing import NDArray
+from datatypes import ArrayType
 
 
-def display(array: NDArray[np.float64]):
+def display(array: ArrayType):
+    """Display a single array in an image, with a color scale gradient mapping to height."""
     size = max(1600 // (array.shape[0]-1), 1)
 
     img = Image.new(mode="RGB", size=(
@@ -30,5 +29,4 @@ def display(array: NDArray[np.float64]):
             # draw.text((i * size, j * size),
             #           str(value), fill=(255, 0, 0))
 
-    # img.save(r'C:\Users\ethan\code\terrain-gen\img.png')
     img.show()

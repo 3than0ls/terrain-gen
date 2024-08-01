@@ -1,12 +1,11 @@
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
-from numpy.typing import NDArray
-
-from generator import diamond_square
+from datatypes import ArrayType
+from generator import generate
 from normalize import normalize
 
 
-def draw_single(draw: ImageDraw.ImageDraw, array: NDArray[np.float64], display_size: int, offset: tuple[int, int]):
+def draw_single(draw: ImageDraw.ImageDraw, array: ArrayType, display_size: int, offset: tuple[int, int]):
     """
     Draws a single map array matrix on the larger ImageDraw canvas, given the display size and the offset (position of map)
     """
@@ -42,14 +41,14 @@ def comparisons(map_size_factor=7, s_range=[x / 10.0 for x in range(0, 11)], amp
     img = Image.new(mode="RGB", size=dims, color=(255, 0, 0))
     draw = ImageDraw.Draw(img)
 
-    seed = np.zeros((map_size, map_size))
+    seed = np.zeros((map_size, map_size), dtype=np.float32)
 
     for s_i, smoothness in enumerate(s_range):
         for amp_i, amplitude in enumerate(amp_range):
             offset = (border_size + s_i * (display_size + border_size),
                       border_size + amp_i * (display_size + border_size))
 
-            result = diamond_square(seed, smoothness, amplitude)
+            result = generate(seed, smoothness, amplitude)
             normalized = normalize(result, 0, 256)
             draw_single(draw, normalized, display_size, offset)
 

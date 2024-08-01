@@ -5,7 +5,6 @@ import math
 import random
 from datatypes import DataType, Point, ArrayType
 
-
 SMOOTHNESS = 0.55
 AMPLITUDE = 100
 
@@ -17,7 +16,6 @@ def _get_value(array: ArrayType, point: Point) -> float | None:
     return array[point.y, point.x]
 
 
-# type: ignore
 def _find_avg(array: ArrayType, midpoint: Point, width: int, step: typing.Literal['diamond', 'square']) -> float:
     """Finds the average value of the points around point [x, y]. If the point is on the edge, then only take the average of the 3 existing points."""
     total = 0
@@ -47,7 +45,7 @@ def _find_avg(array: ArrayType, midpoint: Point, width: int, step: typing.Litera
         return total / count
 
 
-def diamond_step(array: ArrayType, width: int, amplitude: float) -> None:
+def _diamonds_step(array: ArrayType, width: int, amplitude: float) -> None:
     """
     Rather than following the visualization steps found on the Wikipedia (https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Diamond_Square.svg/1920px-Diamond_Square.svg.png)
     Just calculate the start, stop, and step points for the diamond points.
@@ -70,7 +68,7 @@ def diamond_step(array: ArrayType, width: int, amplitude: float) -> None:
             array[y, x] = avg + randomness
 
 
-def square_step(array: ArrayType, width: int, amplitude: float) -> None:
+def _square_step(array: ArrayType, width: int, amplitude: float) -> None:
     """
     Rather than following the visualization steps found on the Wikipedia (https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Diamond_Square.svg/1920px-Diamond_Square.svg.png)
     Just calculate the start, stop, and step points for the square points.
@@ -100,30 +98,39 @@ def square_step(array: ArrayType, width: int, amplitude: float) -> None:
         alternate = not alternate
 
 
-def diamond_square(source_arr: ArrayType, smoothness=SMOOTHNESS, amplitude=AMPLITUDE) -> ArrayType:
+def _diamond_square(array: ArrayType, smoothness=SMOOTHNESS, amplitude=AMPLITUDE) -> ArrayType:
     """
-    Given a seeded `source_arr` of `ArrayType`, populate it with values using the diamond square algorithm, 
-    described at https://en.wikipedia.org/wiki/Diamond-square_algorithm.
-
-    Returns a new array, after which the diamond square algorithm has taken place (using the seeded values).
+    Runs the diamond square algorithm on the given (presumably seeded) array, in place.
     """
-    assert source_arr.shape[0] == source_arr.shape[1]
-    assert math.log2(source_arr.shape[0] - 1).is_integer()
-    assert math.log2(source_arr.shape[1] - 1).is_integer()
-    assert source_arr.dtype == DataType
-
-    array = np.copy(source_arr)
-
-    shape = source_arr.shape
+    shape = array.shape
     width = shape[0] - 1
 
     while width > 1:
         # perform diamond step
-        diamond_step(array, width, amplitude)
+        _diamonds_step(array, width, amplitude)
         # perform square step
-        square_step(array, width, amplitude)
+        _square_step(array, width, amplitude)
 
         width //= 2
         amplitude *= math.pow(2, -smoothness)
 
     return array
+
+
+def generate(source_arr: ArrayType, smoothness=SMOOTHNESS, amplitude=AMPLITUDE) -> ArrayType:
+    """
+    Given a seeded `source_arr` of `ArrayType`, populate it with values using the diamond square algorithm, 
+    described at https://en.wikipedia.org/wiki/Diamond-square_algorithm.
+
+    Ensure that source array is of correct type (`DataType` and `ArrayType`) and is a square shape with a width of `2^n+1` for integer `n` > 0.
+
+    Returns a new array, of type `ArrayType`, after which the diamond square algorithm has taken place (using the seeded values).
+    """
+    if source_arr.shape[0] != source_arr.shape[1] or not math.log2(source_arr.shape[0] - 1).is_integer() or not math.log2(source_arr.shape[1] - 1).is_integer():
+        raise ValueError(
+            "Souce array must be of a square shape, with a width of `2^n + 1`, where `n` is any positive integer.")
+    if source_arr.dtype != DataType:
+        raise ValueError(f"Source array must be of type {DataType}.")
+
+    array = np.copy(source_arr)
+    return _diamond_square(array, smoothness, amplitude)
