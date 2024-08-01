@@ -1,5 +1,5 @@
 import numpy as np
-from datatypes import ArrayType, DataType
+from generate.typing import ArrayType, DataType
 
 
 def normalize(source_arr: ArrayType, low: float, high: float) -> ArrayType:

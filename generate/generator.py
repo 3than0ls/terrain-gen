@@ -3,7 +3,7 @@ import typing
 import numpy as np
 import math
 import random
-from datatypes import DataType, Point, ArrayType
+from generate.typing import DataType, Point, ArrayType
 
 SMOOTHNESS = 0.55
 AMPLITUDE = 100

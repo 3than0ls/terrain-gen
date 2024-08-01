@@ -1,8 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
-from datatypes import ArrayType
-from generator import generate
-from normalize import normalize
+from generate import generate, normalize
+from generate.typing import ArrayType
 
 
 def draw_single(draw: ImageDraw.ImageDraw, array: ArrayType, display_size: int, offset: tuple[int, int]):

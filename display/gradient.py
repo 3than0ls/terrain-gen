@@ -4,9 +4,9 @@ import json
 Gradient = dict[int, str]
 
 
-def process_gradient(fp: Path) -> Gradient:
+def load_gradient(fp: Path) -> Gradient:
     """
-    Process a gradient form a JSON file. 
+    Load a gradient from a JSON file. 
     Return Gradient object, which is just a dictionary with a int key to hex string.
     """
     with open(fp) as f:

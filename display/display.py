@@ -1,5 +1,5 @@
 from PIL import Image, ImageDraw
-from datatypes import ArrayType
+from generate.typing import ArrayType
 from display.gradient import Gradient, get_color
 
 
