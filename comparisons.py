@@ -26,9 +26,9 @@ def draw_single(draw: ImageDraw.ImageDraw, array: NDArray[np.float64], display_s
             )
 
 
-def comparisons(map_size_factor=7, ts_range=[x / 10.0 for x in range(-2, 11)], amp_range=range(50, 600, 50)):
+def comparisons(map_size_factor=7, s_range=[x / 10.0 for x in range(0, 11)], amp_range=range(50, 600, 50)):
     """
-    Compares maps for ranges of terrain smoothness (`ts_range`) and amplitude (`amp_range`) in a single PNG.
+    Compares maps for ranges of terrain smoothness (`s_range`) and amplitude (`amp_range`) in a single PNG.
     """
     UNIT_SIZE = 6  # size of an individual pixel/value in each array
 
@@ -37,19 +37,19 @@ def comparisons(map_size_factor=7, ts_range=[x / 10.0 for x in range(-2, 11)], a
     display_size = map_size * UNIT_SIZE
     border_size = UNIT_SIZE * 5
 
-    dims = (len(ts_range) * (display_size + border_size) + border_size,
+    dims = (len(s_range) * (display_size + border_size) + border_size,
             len(amp_range) * (display_size + border_size) + border_size)
     img = Image.new(mode="RGB", size=dims, color=(255, 0, 0))
     draw = ImageDraw.Draw(img)
 
     seed = np.zeros((map_size, map_size))
 
-    for ts_i, terrain_smoothness in enumerate(ts_range):
+    for s_i, smoothness in enumerate(s_range):
         for amp_i, amplitude in enumerate(amp_range):
-            offset = (border_size + ts_i * (display_size + border_size),
+            offset = (border_size + s_i * (display_size + border_size),
                       border_size + amp_i * (display_size + border_size))
 
-            result = diamond_square(seed, terrain_smoothness, amplitude)
+            result = diamond_square(seed, smoothness, amplitude)
             normalized = normalize(result, 0, 256)
             draw_single(draw, normalized, display_size, offset)
 
@@ -57,14 +57,16 @@ def comparisons(map_size_factor=7, ts_range=[x / 10.0 for x in range(-2, 11)], a
             draw.text(
                 xy=(offset[0]+UNIT_SIZE,
                     offset[1]+UNIT_SIZE),
-                text=f"Terrain Smoothness: {
-                    terrain_smoothness}\nAmplitude: {amplitude}\nNormalized: 0-256",
+                text=f"Smoothness: {smoothness}\nAmplitude: {
+                    amplitude}\nNormalized: 0-256",
                 fill=(255, 0, 0),
                 font=font
             )
 
-    img.show("DS Terrain Smoothness and Amplitude Comparisons (Normalized 0-256)")
+    img.show("DS Smoothness and Amplitude Comparisons (Normalized 0-256)")
 
 
 if __name__ == '__main__':
+    # comparisons(map_size_factor=7, s_range=[0, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4,
+    #             5, 10, 15, 20, 50, 100, 1000, 10000, 100000], amp_range=range(50, 250, 50))
     comparisons()

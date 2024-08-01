@@ -6,7 +6,7 @@ import random
 from datatypes import DataType, Point, ArrayType
 
 
-TERRAIN_SMOOTHNESS = 0.55
+SMOOTHNESS = 0.55
 AMPLITUDE = 100
 
 
@@ -100,7 +100,7 @@ def square_step(array: ArrayType, width: int, amplitude: float) -> None:
         alternate = not alternate
 
 
-def diamond_square(source_arr: ArrayType, terrain_smoothness=TERRAIN_SMOOTHNESS, amplitude=AMPLITUDE) -> ArrayType:
+def diamond_square(source_arr: ArrayType, smoothness=SMOOTHNESS, amplitude=AMPLITUDE) -> ArrayType:
     """
     Given a seeded `source_arr` of `ArrayType`, populate it with values using the diamond square algorithm, 
     described at https://en.wikipedia.org/wiki/Diamond-square_algorithm.
@@ -124,6 +124,6 @@ def diamond_square(source_arr: ArrayType, terrain_smoothness=TERRAIN_SMOOTHNESS,
         square_step(array, width, amplitude)
 
         width //= 2
-        amplitude *= math.pow(2, -terrain_smoothness)
+        amplitude *= math.pow(2, -smoothness)
 
     return array

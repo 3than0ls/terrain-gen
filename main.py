@@ -18,7 +18,7 @@ def main():
     arr_size = 2 ** size + 1
     seed = np.zeros((arr_size, arr_size))
 
-    out = diamond_square(seed, 0, 550)
+    out = diamond_square(seed)
     normalized = normalize(out, 0, 256)
     display(normalized)
 
