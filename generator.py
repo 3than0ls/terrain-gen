@@ -3,38 +3,22 @@ import typing
 import numpy as np
 import math
 import random
-from numpy.typing import NDArray
-from dataclasses import dataclass
-
-ArrayType = NDArray[np.float64]
+from datatypes import DataType, Point, ArrayType
 
 
 TERRAIN_SMOOTHNESS = 0.55
 AMPLITUDE = 100
 
 
-# BIND = True
-# BIND_MIN = -256
-# BIND_MAX = 256
-
-# def _bind(value: float | int, minimum=BIND_MIN, maximum=BIND_MAX):
-#     return min(max(value, minimum), maximum) if BIND else value
-
-
-@dataclass
-class Point:
-    x: int
-    y: int
-
-
-def _get_value(source_arr: NDArray[np.float64], point: Point) -> float | None:
+def _get_value(source_arr: ArrayType, point: Point) -> float | None:
     """Gets the array value at a point [x, y]. If the point is out of bounds of the array, return None."""
     if point.x < 0 or point.x > source_arr.shape[0] - 1 or point.y < 0 or point.y > source_arr.shape[0] - 1:
         return None
     return source_arr[point.y, point.x]
 
 
-def _find_avg(source_arr: NDArray[np.float64], midpoint: Point, width: int, step: typing.Literal['diamond', 'square']) -> float:  # type: ignore
+# type: ignore
+def _find_avg(source_arr: ArrayType, midpoint: Point, width: int, step: typing.Literal['diamond', 'square']) -> float:
     """Finds the average value of the points around point [x, y]. If the point is on the edge, then only take the average of the 3 existing points."""
     source_arr.shape[0]
     total = 0
@@ -122,10 +106,10 @@ def diamond_square(source_arr: ArrayType, terrain_smoothness=TERRAIN_SMOOTHNESS,
     Given a seeded `source_arr` of `ArrayType`, populate it with values using the diamond square algorithm, described at https://en.wikipedia.org/wiki/Diamond-square_algorithm
 
     """
-
     assert source_arr.shape[0] == source_arr.shape[1]
     assert math.log2(source_arr.shape[0] - 1).is_integer()
     assert math.log2(source_arr.shape[1] - 1).is_integer()
+    assert source_arr.dtype == DataType
 
     shape = source_arr.shape
     width = shape[0] - 1
